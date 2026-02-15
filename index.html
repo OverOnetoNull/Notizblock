@@ -1,27 +1,31 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notizblock</title>
-    <script src="script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notizblock</title>
 
-    <link rel="stylesheet" href="style/standard.css">
-    <link rel="stylesheet" href="style.css">
+  <!-- Script bleibt wie bei dir im <head>.
+       WICHTIG: Dann musst du sicherstellen, dass Funktionen erst NACH dem Laden
+       des Body verwendet werden -> deshalb body onload="..." -->
+  <script src="script.js"></script>
+
+  <link rel="stylesheet" href="style/standard.css">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body onload="renderNotes()">
-    <h1>Notizblock</h1>
-    
-    <input id="note_input" type="text">
-    <button onclick="addNote()">notiz speichern</button>
-    <h2>Notes</h2>
-    
 
-    
-    <div id="content"></div>
+<!-- Stil beibehalten: onload direkt im Body -->
+<body onload="renderNotes(); renderTrashNotes();">
+  <h1>Notizblock</h1>
 
-    <h2>Trash</h2>    
-    <div id="trash_content"></div>
+  <label for="note_input">Notiz eingeben:</label>
+  <input id="note_input" type="text">
+  <button onclick="addNote()">notiz speichern</button>
 
+  <h2>Notes</h2>
+  <div id="content"></div>
+
+  <h2>Trash</h2>
+  <div id="trash_content"></div>
 </body>
 </html>
