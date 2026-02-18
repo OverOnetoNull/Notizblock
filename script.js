@@ -2,15 +2,12 @@
 // DATENSTRUKTUREN (Arrays)
 // =========================
 
-// Aktive Notizen
+// Aktive Notizen (parallel: Title und Text müssen IMMER gleich lang sein!)
+let notesTitle = ["baba", "aufgabe erledigen"];
 let notes = ["banana", "rasen mähen"];
 
-// (Optional später) Archiv: du hattest es schon angelegt,
-// aber in deinem HTML gibt es keinen Archiv-Bereich.
-// Deshalb lassen wir es hier erstmal weg oder ungenutzt.
-let archiveNotes = [];
-
-// Papierkorb-Notizen
+// Papierkorb-Notizen (auch parallel)
+let trashNotesTitle = [];
 let trashNotes = [];
 
 // =========================
@@ -18,26 +15,18 @@ let trashNotes = [];
 // =========================
 
 function renderNotes() {
-  // Holt das HTML-Element, in das die Notes gerendert werden sollen
   let contentRef = document.getElementById("content");
-
-  // Inhalt leeren, sonst würdest du beim Neurendern immer doppelt anzeigen
   contentRef.innerHTML = "";
 
-  // Alle Notizen durchlaufen und HTML zusammenbauen
   for (let indexNote = 0; indexNote < notes.length; indexNote++) {
     contentRef.innerHTML += getNoteTemplate(indexNote);
   }
 }
 
 function renderTrashNotes() {
-  // Holt das HTML-Element, in das die Trash-Notes gerendert werden sollen
   let contentRef = document.getElementById("trash_content");
-
-  // Reset
   contentRef.innerHTML = "";
 
-  // Alle Trash-Notizen durchlaufen
   for (
     let indexTrashNote = 0;
     indexTrashNote < trashNotes.length;
@@ -52,13 +41,17 @@ function renderTrashNotes() {
 // =========================
 
 function getNoteTemplate(indexNote) {
-  // Note hat Button: X -> verschiebt in den Papierkorb
-  return `<p>+ ${notes[indexNote]} <button onclick="toTrashNote(${indexNote})">X</button></p>`;
+  return `<p>
+    + title: ${notesTitle[indexNote]} -> ${notes[indexNote]}
+    <button onclick="toTrashNote(${indexNote})">X</button>
+  </p>`;
 }
 
 function getTrashNoteTemplate(indexTrashNote) {
-  // Trash hat Button: löschen -> endgültig entfernen
-  return `<p>- ${trashNotes[indexTrashNote]} <button onclick="deleteNote(${indexTrashNote})">löschen</button></p>`;
+  return `<p>
+    - title: ${trashNotesTitle[indexTrashNote]} -> ${trashNotes[indexTrashNote]}
+    <button onclick="deleteNote(${indexTrashNote})">löschen</button>
+  </p>`;
 }
 
 // =========================
@@ -67,20 +60,17 @@ function getTrashNoteTemplate(indexTrashNote) {
 
 function addNote() {
   let noteInputRef = document.getElementById("note_input");
-  let noteInput = noteInputRef.value;
+  let noteInput = noteInputRef.value.trim();
 
-  // Optional: Leere Eingaben verhindern
-  // (damit nicht "" in deinen Notes landet)
-  noteInput = noteInput.trim();
   if (noteInput === "") return;
 
-  // Neue Notiz ans Ende der Liste
+  // FIX / HINWEIS:
+  // Du hast notesTitle + notes. Deshalb musst du beim Hinzufügen BEIDE Arrays erweitern.
+  // Da du in deinem HTML nur 1 Input hast, setzen wir den Titel automatisch.
+  notesTitle.push("Ohne Titel");
   notes.push(noteInput);
 
-  // Neu rendern, damit sie sichtbar wird
   renderNotes();
-
-  // Inputfeld leeren
   noteInputRef.value = "";
 }
 
@@ -89,15 +79,16 @@ function addNote() {
 // =========================
 
 function toTrashNote(indexNote) {
-  // WICHTIG: splice liefert IMMER ein Array zurück (auch wenn du 1 Element entfernst)
-  // Beispiel: notes.splice(0, 1) -> ["banana"]
-  // Du willst aber den String "banana" -> deshalb [0]
+  // splice gibt ein Array zurück -> mit [0] holen wir den String raus
   let removedNote = notes.splice(indexNote, 1)[0];
+  let removedNoteTitle = notesTitle.splice(indexNote, 1)[0];
 
-  // In den Papierkorb verschieben
+  // FEHLER in deinem Code war:
+  // trashNotes.push(removedNote[0]);
+  // removedNote ist schon String ("banana") -> removedNote[0] ist nur "b"
   trashNotes.push(removedNote);
+  trashNotesTitle.push(removedNoteTitle);
 
-  // Beide Bereiche neu rendern
   renderNotes();
   renderTrashNotes();
 }
@@ -107,9 +98,10 @@ function toTrashNote(indexNote) {
 // =========================
 
 function deleteNote(indexTrashNote) {
-  // Entfernt 1 Element aus dem Trash an der Position indexTrashNote
+  // WICHTIG:
+  // Du musst Titel UND Text löschen, sonst verschiebt sich die Zuordnung!
   trashNotes.splice(indexTrashNote, 1);
+  trashNotesTitle.splice(indexTrashNote, 1);
 
-  // Trash neu rendern
   renderTrashNotes();
 }
